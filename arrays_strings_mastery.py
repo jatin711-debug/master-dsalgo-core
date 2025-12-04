@@ -1578,9 +1578,9 @@ OPTIMIZATION COMPARISON: BRUTE FORCE vs OPTIMAL
 ================================================
 
 Pattern/Problem                    | Brute Force      | Optimal         | Improvement
-----------------------------------|------------------|-----------------|------------------
+-----------------------------------|------------------|-----------------|------------------
 Valid Palindrome                   | O(N²)            | O(N)            | 10x faster
-3Sum                              | O(N³)            | O(N²)           | 100x faster
+3Sum                               | O(N³)            | O(N²)           | 100x faster
 Trapping Rain Water                | O(N²)            | O(N)            | 10x faster
 Middle of Linked List              | O(N) + O(N)      | O(N)            | 2x faster (single pass)
 Longest Substring                  | O(N³)            | O(N)            | 100x faster
