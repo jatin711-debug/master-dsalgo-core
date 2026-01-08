@@ -38,8 +38,27 @@ def merge(intervals):
         Input: intervals = [[1,3],[2,6],[8,10],[15,18]]
         Output: [[1,6],[8,10],[15,18]]
     
-    Time: O(N log N) - Sorting dominates
-    Space: O(N) - To store output
+    APPROACH:
+    - Sort intervals by start time to ensure we process them in order.
+    - Keep a 'merged' list. Initialize with the first interval.
+    - For each subsequent interval, check if it overlaps with the last added interval in 'merged'.
+    - Overlap condition: `current_start <= last_end`.
+    - If overlap: Update `last_end` to `max(last_end, current_end)`.
+    - If no overlap: Append current interval to 'merged'.
+
+    WHY IT WORKS:
+    - Sorting puts potential overlaps adjacent to each other.
+    - By carrying forward the "extended" end time, we daisy-chain merges (e.g., [1,3], [2,6], [5,10] all merge).
+    - We only need to compare with the *last* merged interval because the list is sorted.
+    
+    TIME COMPLEXITY: O(N log N)
+    - Sorting takes O(N log N).
+    - The linear scan takes O(N).
+    - Total: O(N log N).
+
+    SPACE COMPLEXITY: O(N)
+    - O(N) to store the `merged` list in the worst case (no merges).
+    - Sorting might take O(log N) stack space depending on implementation (Timsort).
     """
     if not intervals:
         return []
@@ -79,15 +98,33 @@ STRATEGY:
 def erase_overlap_intervals(intervals):
     """
     LeetCode #435: Non-overlapping Intervals
-    given an array of intervals intervals where intervals[i] = [starti, endi], return 
-    the minimum number of intervals you need to remove to make the rest of the intervals non-overlapping.
+    Given an array of intervals, return the minimum number of intervals to remove 
+    to make the rest of the intervals non-overlapping.
     
     Example:
         Input: intervals = [[1,2],[2,3],[3,4],[1,3]]
         Output: 1 (Remove [1,3])
 
-    Time: O(N log N)
-    Space: O(1) (if we ignore sorting stack space)
+    APPROACH:
+    - Greedy Algorithm (Activity Selection).
+    - Sort by END time. Why? Because the interval that ends easiest leaves the most room for future intervals.
+    - Iterate and keep track of the `end` of the last selected non-overlapping interval.
+    - If `current_start < last_end`: Intersection found. We effectively "remove" the current interval (increment count) because keeping the previous one (which ends earlier) is optimal.
+    - Else: Update `last_end` to `current_end`.
+
+    WHY IT WORKS:
+    - By always picking the interval that finishes earliest, we maximize the remaining time line for other intervals.
+    - Example: [1,4], [2,3], [3,5]. Sorting by end gives [2,3], [1,4], [3,5].
+      - Keep [2,3].
+      - [1,4] overlaps (starts at 1 < 3). Remove it.
+      - [3,5] valid (starts at 3 >= 3). Keep it.
+    
+    TIME COMPLEXITY: O(N log N)
+    - Sorting takes O(N log N).
+    - Iteration takes O(N).
+
+    SPACE COMPLEXITY: O(1)
+    - If we ignore sorting stack space, we only use integer variables.
     """
     if not intervals:
         return 0
@@ -130,8 +167,23 @@ def insert(intervals, new_interval):
         Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
         Output: [[1,5],[6,9]]
 
-    Time: O(N) - Single pass (list is already sorted)
-    Space: O(N) - Output list
+    APPROACH:
+    - Since the list is already sorted, we can process in one pass O(N).
+    - Phase 1: Skip and add all intervals that come strictly *before* the new interval (`current.end < new.start`).
+    - Phase 2: Handle overlaps. While `current.start <= new.end`, we are overlapping.
+      - Merge them into `new_interval`: `new.start = min`, `new.end = max`.
+    - Phase 3: Add the finalized `new_interval`, then add all remaining intervals.
+
+    WHY IT WORKS:
+    - The "before" and "after" parts are untouched.
+    - The "overlap" part effectively collapses multiple intervals into one big interval.
+    - Maintains sorted property.
+
+    TIME COMPLEXITY: O(N)
+    - We iterate through the list exactly once.
+
+    SPACE COMPLEXITY: O(N)
+    - Allocate a new list for the result (standard for immutable input or when required).
     """
     result = []
     i = 0

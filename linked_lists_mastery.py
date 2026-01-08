@@ -45,13 +45,30 @@ def print_linked_list(head):
 def reverse_list(head):
     """
     LeetCode #206: Reverse Linked List
+    Given the head of a singly linked list, reverse the list, and return the reversed list.
+
+    Example:
+        Input: head = [1,2,3,4,5]
+        Output: [5,4,3,2,1]
     
-    Approach:
-    - Three pointers: prev, curr, next_temp.
-    - Save next, flip arrow, move forward.
+    APPROACH:
+    - Iterative In-Place Reversal.
+    - Maintain 3 pointers: `prev` (initially None), `curr` (initially head), `next_temp`.
+    - Loop logic:
+      1. Save `next` node (`next_temp = curr.next`).
+      2. Point `curr` backwards (`curr.next = prev`).
+      3. Move `prev` forward (`prev = curr`).
+      4. Move `curr` forward (`curr = next_temp`).
     
-    Time: O(N)
-    Space: O(1)
+    WHY IT WORKS:
+    - We essentially flip the arrows one by one while traversing.
+    - `prev` eventually becomes the new head (the last element).
+    
+    TIME COMPLEXITY: O(N)
+    - Visit every node exactly once.
+
+    SPACE COMPLEXITY: O(1)
+    - Only 3 pointers used regardless of list size.
     """
     prev = None
     curr = head
@@ -68,14 +85,27 @@ def reverse_list(head):
 def middle_node(head):
     """
     LeetCode #876: Middle of the Linked List
+    Given the head of a singly linked list, return the middle node of the linked list.
     
-    Approach:
-    - Slow moves 1 step.
-    - Fast moves 2 steps.
-    - When Fast reaches end, Slow is at middle.
+    Example:
+        Input: [1,2,3,4,5]
+        Output: Node with value 3
     
-    Time: O(N)
-    Space: O(1)
+    APPROACH:
+    - Two Pointers Strategy (Tortoise and Hare).
+    - `slow` moves 1 step at a time.
+    - `fast` moves 2 steps at a time.
+    - When `fast` reaches the end (or None), `slow` will be exactly at the midpoint.
+
+    WHY IT WORKS:
+    - Distance covered by fast = 2 * Distance covered by slow.
+    - If fast covers L (length of list), slow covers L/2.
+    
+    TIME COMPLEXITY: O(N)
+    - One pass. `fast` traverses the list once.
+
+    SPACE COMPLEXITY: O(1)
+    - No extra space allocated.
     """
     slow = head
     fast = head
@@ -90,13 +120,25 @@ def middle_node(head):
 def has_cycle(head):
     """
     LeetCode #141: Linked List Cycle
+    Given head, determine if the linked list has a cycle in it.
     
-    Approach:
-    - If Fast meets Slow, there is a cycle.
-    - If Fast reaches None, no cycle.
-    
-    Time: O(N)
-    Space: O(1)
+    APPROACH:
+    - Floyd’s Cycle Finding Algorithm (Tortoise and Hare).
+    - `slow` moves 1 step. `fast` moves 2 steps.
+    - If there is a cycle, `fast` will eventually lap `slow` (they will be equal).
+    - If `fast` reaches None, there is no cycle.
+
+    WHY IT WORKS:
+    - If there's a loop, the fast runner is "chasing" the slow runner inside the loop.
+    - The distance between them decreases by 1 in every step.
+    - Eventually distance becomes 0 (collision).
+
+    TIME COMPLEXITY: O(N)
+    - If no cycle: O(N) to reach end.
+    - If cycle: O(N + K) where K is cycle length. Linear.
+
+    SPACE COMPLEXITY: O(1)
+    - Standard two pointer approach.
     """
     slow = head
     fast = head
@@ -113,13 +155,30 @@ def has_cycle(head):
 def merge_two_lists(l1, l2):
     """
     LeetCode #21: Merge Two Sorted Lists
+    Merge two sorted linked lists and return it as a sorted list.
     
-    Approach:
-    - Use Dummy Node to simplify head handling.
-    - Compare heads of l1 and l2, append smaller to current.
+    Example:
+        Input: l1 = [1,2,4], l2 = [1,3,4]
+        Output: [1,1,2,3,4,4]
     
-    Time: O(N + M)
-    Space: O(1)
+    APPROACH:
+    - Use a `Dummy` node. This acts as a placeholder for the start of the new list.
+    - Maintain a `curr` pointer starting at `dummy`.
+    - While both lists have nodes:
+      - Compare `l1.val` and `l2.val`.
+      - Build the link: `curr.next` = smaller node.
+      - Advance the chosen list pointer and `curr`.
+    - Attach the remaining non-empty list at the end.
+
+    WHY IT WORKS:
+    - Dummy head handles edge cases (like empty lists) cleanly without needing special 'if head is None' logic for initialization.
+    - Similar to merge sort's merge step.
+
+    TIME COMPLEXITY: O(N + M)
+    - Iterate through both lists once.
+
+    SPACE COMPLEXITY: O(1)
+    - We are splicing together existing nodes, not creating new ones (except dummy).
     """
     dummy = ListNode(-1)
     curr = dummy
@@ -145,11 +204,27 @@ def remove_nth_from_end(head, n):
     """
     LeetCode #19: Remove Nth Node From End of List
     
-    Approach:
-    - Use Dummy to handle removing head.
-    - Move Fast n+1 steps ahead.
-    - Move Fast and Slow until Fast hits end.
-    - Slow is now before the target node.
+    Example:
+        Input: head = [1,2,3,4,5], n = 2
+        Output: [1,2,3,5]
+    
+    APPROACH:
+    - Two Pointers with a Gap.
+    - Use Dummy node to handle edge case of removing the HEAD itself.
+    - Move `fast` pointer n+1 steps ahead.
+    - Move `slow` and `fast` together until `fast` hits the end.
+    - `slow` is now pointing to the node BEFORE the target.
+    - Delete target: `slow.next = slow.next.next`.
+
+    WHY IT WORKS:
+    - By creating a gap of size `n`, when `fast` is at the end (Null), `slow` is `n` nodes from the end.
+    - The extra +1 step is to land `slow` on the *previous* node to facilitate deletion logic.
+    
+    TIME COMPLEXITY: O(N)
+    - Single pass.
+
+    SPACE COMPLEXITY: O(1)
+    - In-place modification.
     """
     dummy = ListNode(0, head)
     slow = dummy

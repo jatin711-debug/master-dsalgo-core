@@ -47,7 +47,25 @@ def create_tree(arr):
 def inorder_traversal(root):
     """
     LeetCode #94: Binary Tree Inorder Traversal
-    Left -> Root -> Right
+    Return the inorder traversal of its nodes' values: [Left, Root, Right].
+    
+    Example:
+        Input: [1,null,2,3]
+        Output: [1,3,2]
+    
+    APPROACH:
+    - Recursively visit components in order: Left subtree -> Current Node -> Right subtree.
+    
+    WHY IT WORKS:
+    - This order processes nodes "bottom-up" from the leftmost side first.
+    - For BSTs, this yields sorted order.
+
+    TIME COMPLEXITY: O(N)
+    - We visit every node exactly once.
+
+    SPACE COMPLEXITY: O(H)
+    - H is the height of the tree (recursion stack).
+    - Worst case (skewed tree) O(N). Balanced tree O(log N).
     """
     res = []
     def dfs(node):
@@ -64,9 +82,30 @@ def inorder_traversal(root):
 def level_order(root):
     """
     LeetCode #102: Binary Tree Level Order Traversal
+    Return the level order traversal of its nodes' values. (i.e., from left to right, level by level).
     
-    Approach: Queue.
-    - Process size of queue at start of level to distinguish levels.
+    Example:
+        Input: [3,9,20,null,null,15,7]
+        Output: [[3],[9,20],[15,7]]
+    
+    APPROACH:
+    - Use a Queue (FIFO).
+    - Start with root in queue.
+    - While queue is not empty:
+      - Get current level size (k).
+      - Pop k elements, add their children to queue.
+      - Add popped values to current level list.
+
+    WHY IT WORKS:
+    - Queue naturally processes nodes in the order they were discovered.
+    - Processing `level_size` nodes at a time ensures we group level siblings together.
+
+    TIME COMPLEXITY: O(N)
+    - Each node is enqueued and dequeued exactly once.
+
+    SPACE COMPLEXITY: O(W)
+    - W is the maximum width of the tree.
+    - In a perfect binary tree, W = N/2 => O(N).
     """
     if not root: return []
     result = []
@@ -91,11 +130,24 @@ def level_order(root):
 def is_valid_bst(root):
     """
     LeetCode #98: Validate Binary Search Tree
+    Determine if it is a valid binary search tree (BST).
     
-    Approach: Pass range (min, max) down via recursion.
-    Root value must be within (min, max).
-    Left child must be (min, root.val).
-    Right child must be (root.val, max).
+    APPROACH:
+    - Each node must satisfy: `min_val < node.val < max_val`.
+    - Recursively pass down the valid range.
+    - Left child: Updates `max_val` to parent's value.
+    - Right child: Updates `min_val` to parent's value.
+    - Initial range: (-inf, +inf).
+
+    WHY IT WORKS:
+    - A local check (left < node < right) is insufficient; we must check against the *entire* ancestry constraints.
+    - Passing the range ensures global validity.
+
+    TIME COMPLEXITY: O(N)
+    - Visit each node once.
+
+    SPACE COMPLEXITY: O(H)
+    - Recursion stack depth.
     """
     def validate(node, low, high):
         if not node: return True
@@ -114,12 +166,25 @@ def is_valid_bst(root):
 def lowest_common_ancestor(root, p, q):
     """
     LeetCode #236: Lowest Common Ancestor of a Binary Tree
+    Find the lowest node that has both p and q as descendants.
     
-    Approach:
-    - If root is p or q, root is LCA.
-    - Search left and right.
-    - If both return non-null, root is LCA (p and q are in different subtrees).
-    - If only one returns non-null, that one is the answer (p and q in same subtree).
+    APPROACH:
+    - Post-order DFS.
+    - If current node is `p` or `q`, return current node (found one).
+    - If current node is null, return null.
+    - Recurse Left and Right.
+    - Logic:
+      1. If Left and Right both return non-null, current node is the split point (LCA).
+      2. If only one returns non-null, propagate that result up (LCA is higher up or in that subtree).
+    
+    WHY IT WORKS:
+    - We bubble up the discovery of p and q. The first node where these bubbles meet (left has one, right has one) is the LCA.
+
+    TIME COMPLEXITY: O(N)
+    - Worst case we visit every node.
+
+    SPACE COMPLEXITY: O(H)
+    - Recursion stack depth.
     """
     if not root or root == p or root == q:
         return root
@@ -139,10 +204,21 @@ def build_tree(preorder, inorder):
     """
     LeetCode #105: Construct Binary Tree from Preorder and Inorder Traversal
     
-    Approach:
-    - Preorder first element is ROOT.
-    - Find Root in Inorder array (split into Left and Right subtrees).
-    - Recursively build keys.
+    APPROACH:
+    - Preorder: [ROOT, LEFT_SUBTREE, RIGHT_SUBTREE] -> First item is always root.
+    - Inorder:  [LEFT_SUBTREE, ROOT, RIGHT_SUBTREE] -> Root splits the array.
+    - Use a hash map to quickly find index of root in `inorder` array to compute subtree sizes.
+    - Recurse.
+
+    WHY IT WORKS:
+    - Preorder tells us *what* the root is.
+    - Inorder tells us the *structure* (size of left vs right subtrees).
+    
+    TIME COMPLEXITY: O(N)
+    - Map building is O(N). Each node processed once.
+    
+    SPACE COMPLEXITY: O(N)
+    - Hash map stores N entries. Recursion stack O(H).
     """
     inorder_map = {val: i for i, val in enumerate(inorder)}
     pre_iter = iter(preorder)

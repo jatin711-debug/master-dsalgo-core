@@ -24,6 +24,22 @@ class TrieNode:
 class Trie:
     """
     LeetCode #208: Implement Trie (Prefix Tree)
+    A tree data structure used to efficiently store and retrieve keys in a dataset of strings.
+    
+    APPROACH:
+    - Root node is empty.
+    - Each node contains a dictionary of children (char -> next_node).
+    - `is_end` flag marks the end of a valid word.
+    
+    WHY IT WORKS:
+    - Shared prefixes are stored only once, saving space for common prefixes.
+    - Search time is proportional to word length (L), not dataset size (N).
+    
+    TIME COMPLEXITY: O(L)
+    - L is the length of the word for insert/search.
+    
+    SPACE COMPLEXITY: O(Total characters)
+    - In worst case, no common prefixes.
     """
     def __init__(self):
         self.root = TrieNode()
@@ -58,11 +74,23 @@ class Trie:
 def single_number(nums):
     """
     LeetCode #136: Single Number
+    Given a non-empty array of integers, every element appears twice except for one. Find that single one.
     
-    Approach: XOR.
-    - A ^ A = 0
-    - A ^ 0 = A
-    - A ^ B ^ A = B
+    APPROACH:
+    - XOR (^) operation properties:
+      1. A ^ A = 0 (Self-inverse)
+      2. A ^ 0 = A (Identity)
+      3. A ^ B ^ A = B (Commutative/Associative)
+    - XORing all numbers together cancels out the duplicates.
+    
+    WHY IT WORKS:
+    - All pairs cancel to 0. The remaining value is the unique number XORed with 0.
+    
+    TIME COMPLEXITY: O(N)
+    - One pass.
+    
+    SPACE COMPLEXITY: O(1)
+    - No extra space.
     """
     res = 0
     for num in nums:
@@ -76,9 +104,20 @@ def search_rotated(nums, target):
     """
     LeetCode #33: Search in Rotated Sorted Array
     
-    Approach:
-    - One half is always sorted.
-    - Check if target is in the sorted half.
+    APPROACH:
+    - Modified Binary Search.
+    - Key Insight: If you split a rotated sorted array in half, at least one half is always strictly sorted.
+    - 1. Find Sort: Check `nums[l] <= nums[mid]` to see if left side is the sorted normal side.
+    - 2. Check Range: If target is within the sorted side's range, move valid pointers there. Else search the other side.
+    
+    WHY IT WORKS:
+    - Elimination logic of Binary Search still holds as long as we know which half to discard.
+    
+    TIME COMPLEXITY: O(log N)
+    - Standard BS halving.
+    
+    SPACE COMPLEXITY: O(1)
+    - Iterative solution.
     """
     l, r = 0, len(nums) - 1
     
@@ -107,11 +146,22 @@ def search_rotated(nums, target):
 def min_eating_speed(piles, h):
     """
     LeetCode #875: Koko Eating Bananas
+    Return the minimum integer k such that she can eat all bananas within h hours.
     
-    Approach:
-    - We want min speed 'k'. Range of k is [1, max(piles)].
-    - 'Can we finish in h hours with speed k?' is a monotone function.
-    - Use BS to find first 'k' that works.
+    APPROACH:
+    - Solution Space: The speed `k` could be anywhere from 1 to max(piles).
+    - Monotonicity: If Koko can finish with speed `k`, she can definitely finish with `k+1`.
+    - Function `can_finish(k)` returns True/False.
+    - Use Binary Search on the range [1, max_speed] to find the *first* (smallest) `k` that returns True.
+    
+    WHY IT WORKS:
+    - Instead of simulating every speed, we assume the answer range is sorted (False, False, ..., True, True) and find the boundary.
+    
+    TIME COMPLEXITY: O(N * log M)
+    - N is number of piles (for the check).
+    - M is the range of speeds (max pile size). Log M is the BS steps.
+    
+    SPACE COMPLEXITY: O(1)
     """
     def can_finish(k):
         hours = 0

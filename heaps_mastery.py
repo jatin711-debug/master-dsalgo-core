@@ -22,11 +22,26 @@ import heapq
 def find_kth_largest(nums, k):
     """
     LeetCode #215: Kth Largest Element in an Array
+    Return the kth largest element in the array.
     
-    Approach: Min-Heap of size K.
-    - Push elements.
-    - If size > K, pop min.
-    - Remaining min is the Kth largest.
+    Example:
+        Input: nums = [3,2,1,5,6,4], k = 2
+        Output: 5
+    
+    APPROACH:
+    - Use a Min-Heap of fixed size `k`.
+    - Iterate through all numbers. Pushthe current number into the heap.
+    - If the heap size exceeds `k`, pop the smallest element (remove the minimum).
+    - After processing all elements, the heap contains the `k` largest elements. The root of the min-heap (index 0) is the smallest of the top `k`, which is exactly the Kth largest.
+    
+    WHY IT WORKS:
+    - By discarding the smallest elements once we have more than K, we end up keeping only the "heavyweights".
+    
+    TIME COMPLEXITY: O(N * log K)
+    - We perform N insertions into a heap of size K.
+
+    SPACE COMPLEXITY: O(K)
+    - To store the heap elements.
     """
     min_heap = []
     
@@ -49,19 +64,30 @@ class ListNode:
 def merge_k_lists(lists):
     """
     LeetCode #23: Merge k Sorted Lists
+    Merge k sorted linked lists and return it as one sorted list.
     
-    Approach:
-    - Push head of every list into Min-Heap.
-    - Tuple (val, index, node) to handle tie-breaking.
-    - Pop min, append to result, push next of popped node.
+    APPROACH:
+    - Use a Min-Heap to track the smallest node currently available among all K list heads.
+    - Initially push the head of every list into the heap.
+    - While heap is not empty:
+      1. Pop the smallest node. Add it to our result list.
+      2. If the popped node has a `.next`, push that next node into the heap.
     
-    Time: O(N log K)
+    WHY IT WORKS:
+    - Since all sub-lists are sorted, the next smallest element must be one of the heads. A Min-Heap gives us access to this Minimum in O(1) and removal in O(log K).
+    
+    TIME COMPLEXITY: O(N * log K)
+    - N is total number of nodes across all lists.
+    - K is the number of linked lists (heap size).
+    
+    SPACE COMPLEXITY: O(K)
+    - Heap holds at most K elements at any time.
     """
     min_heap = []
     
     for i, l in enumerate(lists):
         if l:
-            # i serves as tie breaker
+            # i serves as tie breaker so we don't compare ListNode objects directly
             heapq.heappush(min_heap, (l.val, i, l))
             
     dummy = ListNode(0)
@@ -83,18 +109,32 @@ def merge_k_lists(lists):
 class MedianFinder:
     """
     LeetCode #295: Find Median from Data Stream
+    Design a structure to add numbers and find the median efficiently.
     
-    Approach:
-    - Max-Heap (small_half): Stores smaller half of numbers.
-    - Min-Heap (large_half): Stores larger half of numbers.
-    - Balance sizes so diff is at most 1.
+    APPROACH:
+    - Maintain two heaps:
+      1. `small_half`: A Max-Heap storing the smaller 50% of numbers. (Python has only Min-Heap, so store negatives).
+      2. `large_half`: A Min-Heap storing the larger 50% of numbers.
+    - Property: `max(small_half) <= min(large_half)`.
+    - Balance: Sizes should not differ by more than 1.
+    
+    WHY IT WORKS:
+    - The median is either the peak of the small half, the peak of the large half, or the average of both.
+    - Heaps allow O(log N) insertion and O(1) access to these peaks.
+    
+    TIME COMPLEXITY:
+    - addNum: O(log N)
+    - findMedian: O(1)
+    
+    SPACE COMPLEXITY: O(N)
+    - To store all elements.
     """
     def __init__(self):
         self.small_half = [] # Max Heap (invert values)
         self.large_half = [] # Min Heap
 
     def addNum(self, num: int) -> None:
-        # Provide to small half first
+        # Provide to small half first (Max-Heap)
         heapq.heappush(self.small_half, -num)
         
         # Ensure max of small <= min of large

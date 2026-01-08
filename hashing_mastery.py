@@ -24,13 +24,28 @@ from collections import defaultdict, Counter
 def two_sum(nums, target):
     """
     LeetCode #1: Two Sum
+    Given an array of integers nums and an integer target, return indices of the two numbers such that they add up to target.
+
+    Example:
+        Input: nums = [2,7,11,15], target = 9
+        Output: [0,1]
     
-    Approach: Hash Map
-    - Map value -> index
-    - For each num, check if (target - num) is in map.
+    APPROACH:
+    - Use a Hash Map to store `value -> index` mapping as we iterate.
+    - For each `num`, check if `complement = target - num` exists in the map.
+    - If yes, we found the pair! Return current index and map[complement].
+    - Otherwise, store `num` in map.
+
+    WHY IT WORKS:
+    - By storing elements seen so far, we can look "backwards" in O(1) time.
+    - `a + b = target` -> `a = target - b`.
     
-    Time: O(N)
-    Space: O(N)
+    TIME COMPLEXITY: O(N)
+    - Single pass through the array.
+    - Map lookup is O(1) on average.
+
+    SPACE COMPLEXITY: O(N)
+    - Worst case: we store all N elements in the hash map.
     """
     seen = {} # val -> index
     
@@ -47,13 +62,30 @@ def two_sum(nums, target):
 def group_anagrams(strs):
     """
     LeetCode #49: Group Anagrams
+    Given an array of strings strs, group the anagrams together.
     
-    Approach:
-    - Use a tuple of character counts (or sorted string) as key.
-    - Value is list of strings matching that key.
+    Example:
+        Input: strs = ["eat","tea","tan","ate","nat","bat"]
+        Output: [["bat"],["nat","tan"],["ate","eat","tea"]]
     
-    Time: O(N * K) where K is max string length (using count array)
-    Space: O(N * K)
+    APPROACH:
+    - Anagrams share the exact same character counts.
+    - We need a canonical representation (key) for each group.
+    - Option 1: Sort the string ("ate" -> "aet", "tea" -> "aet"). O(K log K).
+    - Option 2: Character count tuple (a=1, e=1, t=1...). O(K).
+    - Map Key: Tuple of counts (requires tuple for immutability).
+    - Map Value: List of original strings.
+
+    WHY IT WORKS:
+    - All anagrams map to the same key because they have identical character frequencies.
+    - Hash Map automatically groups them.
+
+    TIME COMPLEXITY: O(N * K)
+    - N is number of strings, K is max length of a string.
+    - Counting chars takes O(K). we do this for N strings.
+
+    SPACE COMPLEXITY: O(N * K)
+    - Storing all strings and keys in the map.
     """
     groups = defaultdict(list)
     
@@ -75,16 +107,28 @@ def group_anagrams(strs):
 def longest_consecutive(nums):
     """
     LeetCode #128: Longest Consecutive Sequence
-    Given unsorted array, find length of longest consecutive elements sequence.
+    Given an unsorted array of integers nums, return the length of the longest consecutive elements sequence.
     Example: [100, 4, 200, 1, 3, 2] -> [1, 2, 3, 4] -> 4
     
-    Approach:
-    - Put all nums in a Set for O(1) lookup.
-    - Only start counting if (num - 1) is NOT in set (Start of sequence).
-    - While (num + 1) in set, increment.
+    APPROACH:
+    - Convert array to a Set for O(1) lookups.
+    - Iterate through the set.
+    - Key Insight: Only attempt to build a sequence if the current number is the START of a sequence.
+    - How do we know if `x` is the start? If `x - 1` is NOT in the set.
+    - If it is the start, keep checking `x+1, x+2...` until the sequence breaks.
+
+    WHY IT WORKS:
+    - We avoid redundant work. For sequence [1,2,3,4], we only process it when we see '1'.
+    - When we visit '2', we see '1' exists, so we skip it.
+    - This ensures every element is visited at most twice (once in outer loop, once in inner loop).
+
+    TIME COMPLEXITY: O(N)
+    - Set creation: O(N).
+    - Outer loop: O(N).
+    - Inner loop runs only when start of sequence found. Total inner loop iterations across entire runtime is O(N).
     
-    Time: O(N) - distinct elements visited at most twice
-    Space: O(N)
+    SPACE COMPLEXITY: O(N)
+    - To store the set.
     """
     num_set = set(nums)
     longest = 0
@@ -109,16 +153,28 @@ def longest_consecutive(nums):
 def subarray_sum_k(nums, k):
     """
     LeetCode #560: Subarray Sum Equals K
+    Given an array of integers nums and an integer k, return the total number of subarrays whose sum equals to k.
     
-    Approach:
-    - Sum(i, j) = PrefixSum[j] - PrefixSum[i-1]
-    - We want Sum(i, j) = k
-    - So, PrefixSum[j] - PrefixSum[i-1] = k
-    - PrefixSum[i-1] = PrefixSum[j] - k
-    - Store count of prefix sums seen so far.
+    Example:
+        Input: nums = [1,1,1], k = 2
+        Output: 2 ([1,1] at start, [1,1] at end)
+
+    APPROACH:
+    - Use Prefix Sum concept: Sum(i, j) = PrefixSum[j] - PrefixSum[i-1].
+    - We want Sum(i, j) == k.
+    - Therefore: `PrefixSum[j] - PrefixSum[i-1] == k`
+    - Rearranging: `PrefixSum[i-1] == PrefixSum[j] - k`
+    - As we iterate (calculating current prefix sum for 'j'), we check if `current_sum - k` has appeared before.
+    - Use a Hash Map `prefix_map` to store `{ sum : count_of_occurrences }`.
+
+    WHY IT WORKS:
+    - If `current_sum - k` exists in our map 3 times, it means there are 3 distinct start points that result in a subarray sum of k ending at current index.
     
-    Time: O(N)
-    Space: O(N)
+    TIME COMPLEXITY: O(N)
+    - Single pass. Map operations are O(1).
+
+    SPACE COMPLEXITY: O(N)
+    - Map can store up to N distinct prefix sums.
     """
     count = 0
     current_sum = 0

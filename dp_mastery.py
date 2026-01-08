@@ -22,10 +22,21 @@ SPACE COMPLEXITY: O(N) or O(N*M) (Can often optimize to O(N) or O(1)).
 def climb_stairs(n):
     """
     LeetCode #70: Climbing Stairs
+    You are climbing a staircase. It takes n steps to reach the top. Each time you can either climb 1 or 2 steps. How many distinct ways can you climb to the top?
     
-    Approach:
-    - Ways(i) = Ways(i-1) + Ways(i-2)
-    - Base cases: Ways(1)=1, Ways(2)=2
+    APPROACH:
+    - Base Logic: To reach step `i`, you must have come from step `i-1` (took 1 step) or step `i-2` (took 2 steps).
+    - Recurrence: `ways(i) = ways(i-1) + ways(i-2)`.
+    - Loop from 3 to n.
+    
+    WHY IT WORKS:
+    - The problem breaks down into identical subproblems. Since we only need the last two values, we can optimize space.
+    
+    TIME COMPLEXITY: O(N)
+    - Single loop up to N.
+    
+    SPACE COMPLEXITY: O(1)
+    - Only store two previous variables.
     """
     if n <= 2: return n
     prev2, prev1 = 1, 2
@@ -41,11 +52,22 @@ def climb_stairs(n):
 def coin_change(coins, amount):
     """
     LeetCode #322: Coin Change
+    Return the fewest number of coins that you need to make up that amount.
     
-    Approach:
-    - dp[i] = min coins to make amount 'i'.
-    - dp[i] = min(dp[i - coin]) + 1
-    - Base: dp[0] = 0, others infinity.
+    APPROACH:
+    - `dp[i]` = Minimum coins needed to make amount `i`.
+    - Initialize `dp` array with `inf`, set `dp[0] = 0`.
+    - Iterate through every amount `a` from 1 to `amount`.
+    - For every coin `c`, if `a >= c`, try to update: `dp[a] = min(dp[a], dp[a - c] + 1)`.
+    
+    WHY IT WORKS:
+    - We build the solution from the bottom up. For any amount, the best solution is 1 coin plus the best solution for the remaining amount.
+    
+    TIME COMPLEXITY: O(Amount * Coins)
+    - Nested loop.
+    
+    SPACE COMPLEXITY: O(Amount)
+    - DP array of size Amount + 1.
     """
     dp = [float('inf')] * (amount + 1)
     dp[0] = 0
@@ -63,11 +85,21 @@ def coin_change(coins, amount):
 def longest_common_subsequence(text1, text2):
     """
     LeetCode #1143: Longest Common Subsequence
+    Return the length of their longest common subsequence.
     
-    Approach:
-    - dp[i][j] = LCS of text1[0:i] and text2[0:j]
-    - If chars match: dp[i][j] = 1 + dp[i-1][j-1]
-    - If no match: max(dp[i-1][j], dp[i][j-1])
+    APPROACH:
+    - 2D Grid `dp[i][j]` representing LCS of `text1[0...i]` and `text2[0...j]`.
+    - If characters match (`text1[i] == text2[j]`): `dp[i][j] = 1 + dp[i-1][j-1]` (extend the diagonal match).
+    - If mismatch: `dp[i][j] = max(dp[i-1][j], dp[i][j-1])` (carry over the best from either top or left).
+    
+    WHY IT WORKS:
+    - Compares every prefix of text1 against every prefix of text2.
+    
+    TIME COMPLEXITY: O(M * N)
+    - Fill M*N table.
+    
+    SPACE COMPLEXITY: O(M * N)
+    - The DP table. (Can be optimized to O(min(M,N)) using only 2 rows).
     """
     m, n = len(text1), len(text2)
     dp = [[0] * (n + 1) for _ in range(m + 1)]
@@ -88,13 +120,23 @@ def length_of_lis(nums):
     """
     LeetCode #300: Longest Increasing Subsequence
     
-    Approach O(N^2): dp[i] = max(dp[j]) + 1 for j < i and nums[j] < nums[i].
-    Approach O(N log N): Patience sorting / BS.
+    APPROACH (Standard DP):
+    - `dp[i]` = Length of LIS ending at index `i`.
+    - For every `i`, look back at all `j < i`.
+    - If `nums[i] > nums[j]`, we can extend the sequence ending at `j`.
+    - `dp[i] = max(dp[i], dp[j] + 1)`.
+    
+    WHY IT WORKS:
+    - Guaranteed to find the optimal subsequence ending at each position. The global max of `dp` is the answer.
+    
+    TIME COMPLEXITY: O(N^2)
+    - Nested loops.
+    - Note: Can be optimized to O(N log N) using Binary Search (Patience Sorting).
+    
+    SPACE COMPLEXITY: O(N)
+    - DP array.
     """
     if not nums: return 0
-    # Let's implement O(N^2) for clarity, or O(N logN) for mastery?
-    # O(N^2) is "Standard DP". O(N log N) is "Greedy+BS".
-    # I'll include O(N^2) as it's the core DP pattern.
     
     dp = [1] * len(nums)
     for i in range(len(nums)):
@@ -110,10 +152,22 @@ def length_of_lis(nums):
 def count_substrings(s):
     """
     LeetCode #647: Palindromic Substrings
+    Count how many palindromic substrings exist.
     
-    Approach: Expand Around Center.
-    - Treat every index (and gap) as a center.
-    - Expand while valid palindrome.
+    APPROACH:
+    - Expand Around Center.
+    - There are `2N - 1` centers (N single characters, N-1 spaces between characters).
+    - For each center, expand `left` and `right` indices while `s[left] == s[right]`.
+    - Increment count for each valid expansion.
+    
+    WHY IT WORKS:
+    - Every palindrome has a center. By checking all centers, we find all palindromes without checking all O(N^2) substrings from scratch.
+    
+    TIME COMPLEXITY: O(N^2)
+    - Expanding takes O(N), we do it for N centers.
+    
+    SPACE COMPLEXITY: O(1)
+    - No extra storage needed.
     """
     count = 0
     for i in range(len(s)):

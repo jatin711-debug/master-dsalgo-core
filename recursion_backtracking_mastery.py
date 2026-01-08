@@ -20,9 +20,29 @@ SPACE COMPLEXITY: O(N) recursion stack.
 def subsets(nums):
     """
     LeetCode #78: Subsets
+    Given an integer array nums of unique elements, return all possible subsets (the power set).
     
-    Approach: Cascading or Backtracking.
-    Backtracking: For each element, include it or don't.
+    Example:
+        Input: nums = [1,2,3]
+        Output: [[],[1],[2],[1,2],[3],[1,3],[2,3],[1,2,3]]
+    
+    APPROACH:
+    - Backtracking / Decision Tree Strategy.
+    - For each element, we have two choices:
+      1. Include it in the current subset.
+      2. Exclude it from the current subset.
+    - Recurse until we process all elements.
+
+    WHY IT WORKS:
+    - This creates a binary decision tree of height N.
+    - The leaves of this tree represent all 2^N possible combinations.
+    
+    TIME COMPLEXITY: O(N * 2^N)
+    - 2^N possible subsets.
+    - Copying the subset list takes O(N).
+
+    SPACE COMPLEXITY: O(N)
+    - Recursion depth is N.
     """
     result = []
     
@@ -47,10 +67,29 @@ def subsets(nums):
 def permute(nums):
     """
     LeetCode #46: Permutations
+    Given an array nums of distinct integers, return all the possible permutations.
     
-    Approach:
-    - Try every number at current position.
-    - Keep track of used numbers (or swap in-place).
+    Example:
+        Input: [1,2,3]
+        Output: 6 permutations
+    
+    APPROACH:
+    - Trying every ordering.
+    - Loop through available numbers. Check if number is used.
+    - If not used, add to path and mark as used.
+    - Recurse.
+    - After recursion returns, backtrack: remove from path, mark as unused.
+
+    WHY IT WORKS:
+    - Generates the factorial tree (N options, then N-1, etc.).
+    - Ensures every unique ordering is explored exactly once.
+
+    TIME COMPLEXITY: O(N * N!)
+    - N! permutations.
+    - Operations per node can take O(N).
+
+    SPACE COMPLEXITY: O(N)
+    - Recursion depth N. Used set O(N).
     """
     result = []
     
@@ -78,10 +117,28 @@ def permute(nums):
 def combination_sum(candidates, target):
     """
     LeetCode #39: Combination Sum
+    Given an array of distinct integers candidates and a target integer target, return a list of all unique combinations where the chosen numbers sum to target. (Can reuse elements).
     
-    Approach:
-    - Same number can be used unlimited times -> pass 'i' not 'i+1'.
-    - Base case: sum == target (add), sum > target (return).
+    Example:
+        Input: [2,3,6,7], target=7
+        Output: [[2,2,3],[7]]
+    
+    APPROACH:
+    - Decision: Include candidates[i] OR don't include candidates[i].
+    - Since we can reuse, if we choose to include, we recurse with same index `i`.
+    - If we choose not to include, we move to `i+1`.
+    - Base Case: remaining == 0 (Add to result), remaining < 0 (Stop).
+
+    WHY IT WORKS:
+    - DFS exploration of the valid sum space.
+    - Passing index `i` avoids duplicates (we never look back at elements before `i`).
+
+    TIME COMPLEXITY: O(N^(T/M)) roughly
+    - N = number of candidates. T = target. M = min candidate value.
+    - Exponential in worst case.
+
+    SPACE COMPLEXITY: O(T/M)
+    - Recursion depth.
     """
     result = []
     
@@ -107,11 +164,27 @@ def combination_sum(candidates, target):
 def exist(board, word):
     """
     LeetCode #79: Word Search
+    Given an m x n grid of characters board and a string word, return true if word exists in the grid.
     
-    Approach:
-    - DFS from every cell matching first char.
-    - Mark visited (temporarily with '#').
-    - Check 4 directions.
+    APPROACH:
+    - Loop through every cell. If cell matches word[0], start DFS.
+    - DFS:
+      - Boundaries check? Match char check? If fail, return False.
+      - If index == len(word), We found it! Returns True.
+      - Mark current cell as visited (e.g. use a special char '#').
+      - Recurse in 4 directions.
+      - Backtrack: Restore cell to original char.
+
+    WHY IT WORKS:
+    - Systematically explores all paths from a potential start point.
+    - Backtracking ensures we can reuse the cell for other paths if the current one fails.
+
+    TIME COMPLEXITY: O(Rows * Cols * 4^L)
+    - Loop R*C times.
+    - DFS depth L (word length). Branching factor 3 (effectively, since we don't go back). 4^L worst case.
+
+    SPACE COMPLEXITY: O(L)
+    - Recursion stack depth is length of word.
     """
     if not board: return False
     rows, cols = len(board), len(board[0])

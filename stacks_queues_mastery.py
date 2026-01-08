@@ -22,14 +22,28 @@ from collections import deque
 def isValid(s):
     """
     LeetCode #20: Valid Parentheses
+    Given a string s containing just the characters '(', ')', '{', '}', '[' and ']', determine if the input string is valid.
     
-    Approach:
-    - Push opening brackets to stack.
-    - When closing, check if matches top of stack.
-    - Stack must be empty at end.
+    Example:
+        Input: s = "()[]{}"
+        Output: True
     
-    Time: O(N)
-    Space: O(N)
+    APPROACH:
+    - Use a Stack to keep track of opening brackets.
+    - When we encounter a closing bracket:
+      - Check if stack is empty (Invalid).
+      - Check if the top of stack matches the current closing bracket.
+      - If match, pop from stack. If not match, return False.
+    - At the end, if stack is empty, return True.
+
+    WHY IT WORKS:
+    - Stack (LIFO) perfectly models nested structures. The most recently opened bracket must be the first one closed.
+
+    TIME COMPLEXITY: O(N)
+    - Traverse string once. Push/Pop are O(1).
+
+    SPACE COMPLEXITY: O(N)
+    - Worst case: "(((((" stores all chars in stack.
     """
     stack = []
     mapping = {")": "(", "}": "{", "]": "["}
@@ -52,16 +66,32 @@ def isValid(s):
 def daily_temperatures(temperatures):
     """
     LeetCode #739: Daily Temperatures
-    Find number of days to wait for a warmer temperature.
+    Given an array of temperatures, return an array answer such that answer[i] is the number of days you have to wait after the ith day to get a warmer temperature.
     
-    Approach: Monotonic Decreasing Stack.
-    - Store INDICES in stack.
-    - If current temp > temp at stack top:
-      We found the "next greater" for the stack top. Pop and record distance.
-    - Else push current index.
+    Example:
+        Input: [73,74,75,71,69,72,76,73]
+        Output: [1, 1, 4, 2, 1, 1, 0, 0]
     
-    Time: O(N) - each element pushed/popped once
-    Space: O(N)
+    APPROACH:
+    - Monotonic Decreasing Stack.
+    - We want to find the *next* element that is larger.
+    - We store **indices** in the stack.
+    - Invariant: Elements in stack (referenced by index) are always in decreasing order.
+    - Logic:
+      - When we see a new temperature `T[i]`, we compare it with `T[stack.top()]`.
+      - While `T[i] > T[stack.top()]`: We found a warmer day for the index at stack top!
+        - Pop index, calculate distance `i - top_index`, store in result.
+      - Push `i` onto stack.
+
+    WHY IT WORKS:
+    - By waiting to resolve indices until we find a larger value, we efficiently solve the "Next Greater Element" problem.
+    - Each element is pushed once and popped once.
+
+    TIME COMPLEXITY: O(N)
+    - Even though there is a while loop, each element is pushed and popped at most once.
+
+    SPACE COMPLEXITY: O(N)
+    - Stack size.
     """
     result = [0] * len(temperatures)
     stack = [] # indices
@@ -80,18 +110,31 @@ def daily_temperatures(temperatures):
 def max_sliding_window(nums, k):
     """
     LeetCode #239: Sliding Window Maximum
+    You are given an array of integers nums, there is a sliding window of size k which is moving from the very left of the array to the very right. Return the max sliding window.
     
-    Approach: Monotonic Decreasing Deque
-    - Deque stores INDICES.
-    - Maintain deque such that values corresponding to indices are decreasing.
-    - Front of deque is always the max for current window.
-    - Step 1: Remove indices out of window (i - k).
-    - Step 2: Remove indices with values < current num (they can't be max anymore).
-    - Step 3: Add current index.
-    - Step 4: Add result (from index k-1 onwards).
+    Example:
+        Input: nums = [1,3,-1,-3,5,3,6,7], k = 3
+        Output: [3,3,5,5,6,7]
     
-    Time: O(N)
-    Space: O(K)
+    APPROACH:
+    - Use a Deque (Double-ended queue) to store indices.
+    - We want the Deque to store indices of potential maximums.
+    - Invariant: The values corresponding to indices in Deque are Strictly Decreasing. `nums[dq[0]]` is always the MAX.
+    - Steps for each element `nums[i]`:
+      1. Remove indices from front that are out of the new window (`i - k`).
+      2. Maintain Monotonicity: Remove indices from back if `nums[back] < nums[i]` (because `nums[i]` is newer and larger, so `nums[back]` is useless).
+      3. Add `i` to back.
+      4. If `i >= k-1`, add `nums[dq[0]]` to result.
+
+    WHY IT WORKS:
+    - `dq[0]` always holds the index of the largest element in current window.
+    - We remove smaller elements because they can never be the maximum if a larger, newer element exists.
+
+    TIME COMPLEXITY: O(N)
+    - Each element added and removed from deque at most once.
+
+    SPACE COMPLEXITY: O(K)
+    - Deque stores at most K elements (indices).
     """
     dq = deque()
     result = []
