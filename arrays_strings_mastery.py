@@ -248,7 +248,6 @@ def trap(height):
     left_max = 0
     right_max = 0
     water = 0
-
     while left < right:
         # Track maximum heights
         if height[left] > left_max:
@@ -256,6 +255,7 @@ def trap(height):
 
         if height[right] > right_max:
             right_max = height[right]
+
 
         # Process the smaller side
         if left_max <= right_max:
@@ -471,7 +471,7 @@ def sliding_window_fixed_template(arr, k):
     TEMPLATE for Sliding Window (Fixed Size)
     """
     if len(arr) < k:
-        return None
+        return None  
 
     # Calculate initial window
     window_sum = sum(arr[:k])

@@ -9,11 +9,22 @@
    - Kadane’s Algorithm: Finding the maximum sum subarray.  
    - Dutch National Flag: Sorting 3 unique elements (0, 1, 2) in-place.  
    - Matrix Traversal: Spiral order, rotating images (matrix manipulation).  
+   - Modified Binary Search: Searching in rotated sorted arrays.  
    **How to Spot It:**  
    - "Sorted Array" → Think Two Pointers or Binary Search.  
    - "Subarray" or "Substring" → Think Sliding Window or Prefix Sum.  
    - "Palindrome" → Think Two Pointers.  
    - "In-place" → Think swapping elements or overwriting indices.  
+
+1.5. **Module 1.5: Intervals**  
+   Handling overlapping or merging time ranges.  
+   **Patterns:**  
+   - Merge Intervals: Sorting by start time to merge overlapping intervals.  
+   - Non-overlapping Intervals: Sorting by end time (Greedy) to find max compatible set.  
+   - Insert Interval: Handling new interval insertion while maintaining order.  
+   **How to Spot It:**  
+   - "Overlapping times" → Sort by Start Time.  
+   - "Minimum intervals to remove" → Sort by End Time (Greedy).  
 
 2. **Module 2: Hashing (Hash Maps & Sets)**  
    The utility knife. Trading space O(N) for time O(1).  
@@ -49,6 +60,7 @@
    - Monotonic Stack: Finding the "Next Greater Element" or "Next Smaller Element". (Crucial for Histogram problems).  
    - String Decoding/Calculator: Handling nested operations or undo functionality.  
    - BFS (Breadth-First Search): Using a Queue for level-order traversal (Trees/Graphs).  
+   - Monotonic Queue: Finding the max/min in a sliding window (Deque).  
    **How to Spot It:**  
    - "Nested" structures ({{}}) → Stack.  
    - "Next Greater/Smaller" → Monotonic Stack.  
@@ -77,6 +89,8 @@
    - BST Property: Left < Root < Right. Used for validation or searching.  
    - Path Sum: Accumulating values from Root to Leaf.  
    - Serialization: Converting a tree to a string and back.  
+   - Lowest Common Ancestor (LCA): Finding the deepest common ancestor.  
+   - Tree Construction: Rebuilding unique tree from Preorder + Inorder arrays.  
    **How to Spot It:**  
    - "Hierarchical" or "Organization" → Tree.  
    - "Depth" → DFS.  
@@ -103,6 +117,7 @@
    - Union-Find (Disjoint Set): Grouping components, detecting cycles in undirected graphs.  
    - Topological Sort (Kahn’s Algo / DFS): Scheduling dependencies (e.g., Course Schedule).  
    - Dijkstra’s Algorithm: Shortest path in a weighted graph (No negative weights).  
+   - Minimum Spanning Tree (MST): Kruskal’s or Prim’s algo for connecting graph with min cost.  
    **How to Spot It:**  
    - "Network", "Connections", "Islands" → Graph DFS/BFS/Union-Find.  
    - "Shortest Path" → BFS (Unweighted) or Dijkstra (Weighted).  
